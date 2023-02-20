@@ -1,7 +1,10 @@
-.PHONY: debug run
+.PHONY: debug run setup
 
 run:
-	python3 -m flask --app backend run
+	uvicorn main:app
 
 debug:
-	python3 -m flask --app backend --debug run
+	uvicorn main:app --reload
+
+setup:
+	pip install -r requirements.txt
