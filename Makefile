@@ -1,10 +1,16 @@
-.PHONY: debug run setup
+.PHONY: debug run setup help
+
+help:
+	@echo "Makefile options: \n\
+	run:   -> run the backend api \n\
+	debug: -> run api in debug mode \n\
+	setup: -> install all python requirements"
 
 run:
-	uvicorn main:app
+	uvicorn src.main:app
 
 debug:
-	uvicorn main:app --reload
+	uvicorn src.main:app --reload
 
 setup:
-	pip install -r requirements.txt
+	pip install --user -r requirements.txt
