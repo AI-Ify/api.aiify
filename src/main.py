@@ -1,4 +1,5 @@
 import os
+import logging
 
 from authlib.integrations.starlette_client import OAuth
 from authlib.integrations.base_client.errors import MismatchingStateError
@@ -10,10 +11,9 @@ from starlette.responses import RedirectResponse
 
 from .utils import random_string
 
+LOG = logging.basicConfig(level=logging.DEBUG)
 APP_BASE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 UVICORN_PORT = os.getenv('UVICORN_PORT', 8000)
-
 AUTHORIZATION_URL = 'https://accounts.spotify.com/authorize'
 ACCESS_TOKEN_URL = 'https://accounts.spotify.com/api/token'
 REDIRECTION_URL = f'http://localhost:{UVICORN_PORT}/callback'
@@ -48,17 +48,12 @@ app = FastAPI()
 # Allow authlib to use request.session
 app.add_middleware(SessionMiddleware, secret_key=random_string(10))
 
-
 # Note! 
 # If changing this route, need to change the route in spotify dev dashboard
 @app.get('/callback/', include_in_schema=False)
 async def callback(request: Request, response: Response):
+    logging.debug('In callback')
     token = await oath.spotify.authorize_access_token(request)
-    try:
-        token = await oath.spotify.authorize_access_token(request)
-    except MismatchingStateError:
-        response.status_code = 475
-        return {'error': 'MismatchingStateError'}
     return token
 
 
